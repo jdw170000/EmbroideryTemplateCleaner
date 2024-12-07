@@ -21,6 +21,7 @@ TEMPLATE_FILE_EXTENSIONS = {
     '.pec',
     '.DS_Store',
 }
+
 class Configuration:
     target_directory: Path
     extensions_to_delete: set[str]
