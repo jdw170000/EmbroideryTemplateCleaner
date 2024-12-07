@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 
-CONFIG_FILE_LOCATION = Path.home() / 'sewing_file_cleaner.config.json'
+CONFIG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.config.json'
 
 TEMPLATE_FILE_EXTENSIONS = {
     '.exp',
@@ -52,14 +52,14 @@ class Configuration:
         if not isinstance(config_dict['extension_blacklist'], list):
             raise ValueError(f"Extension blacklist ({config_dict['extension_blacklist']}) should be a list of strings.")
 
-        target_directory = Path(config_dict['target_directory'])
+        target_directory = Path(config_dict['target_directory']) if config_dict['target_directory'] else None
         extension_blacklist = set(config_dict['extension_blacklist'])
 
         return Configuration(target_directory=target_directory, extensions_to_delete=extension_blacklist)
     
     def to_json(self) -> str:
         return json.dumps({
-            'target_directory': str(self.target_directory.resolve()),
+            'target_directory': str(self.target_directory.resolve() if self.target_directory else ''),
             'extension_blacklist': list(self.extensions_to_delete)
         })
 

@@ -25,6 +25,7 @@ class CleanerGUI(ttk.Frame):
         self.directory_entry.grid(row=0, column=1, padx=10, pady=5)
         if self.config.target_directory:
             self.directory_entry.insert(0, str(self.config.target_directory))
+        self.directory_entry.config(state='readonly')
         browse_button = ttk.Button(self, text="Browse", command=self.browse_directory)
         browse_button.grid(row=0, column=2, padx=10, pady=5)
 
@@ -41,7 +42,7 @@ class CleanerGUI(ttk.Frame):
 
 
     def update_config_from_gui(self) -> bool:
-        target_directory = Path(self.directory_entry.get())
+        target_directory = Path(self.directory_entry.get()) if self.directory_entry.get() else None
         selected_extensions = {ext for ext, var in self.extension_vars.items() if var.get()}
 
         if not target_directory:
@@ -69,5 +70,8 @@ class CleanerGUI(ttk.Frame):
     def browse_directory(self):
         directory = filedialog.askdirectory()
         if directory:
-            self.directory_entry.delete(0, ttk.END)
+            self.directory_entry.config(state='normal')
+            if self.directory_entry.get():
+                self.directory_entry.delete(0, tk.END)
             self.directory_entry.insert(0, directory)
+            self.directory_entry.config(state='readonly')
