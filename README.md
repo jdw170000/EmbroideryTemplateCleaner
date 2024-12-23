@@ -6,7 +6,7 @@ Embroidery template packages often contain duplicate files in numerous file form
 
 ## How to Use
 
-1.  **Download:** Obtain the executable for your operating system from the [Releases](LINK_TO_RELEASES_HERE) section.
+1.  **Download:** Obtain the executable for your operating system from the [Releases](https://github.com/jdw170000/EmbroideryTemplateCleaner/releases) section.
 2.  **Run:** Execute the application.
 3.  **Select Directory:** Click the "Browse" button to choose the directory containing embroidery files you want to clean.
 4.  **Select Extensions:** Check the boxes next to the file extensions you want to delete.
