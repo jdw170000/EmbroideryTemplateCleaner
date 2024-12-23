@@ -23,8 +23,7 @@ If you prefer to build the application from the source code:
     *   `PyInstaller` installed: `pip install pyinstaller`
 2.  **Clone:** Clone the repository:
     ```bash
-    git clone LINK_TO_REPOSITORY_HERE
-    cd embroidery-template-cleaner
+    git clone git@github.com:jdw170000/EmbroideryTemplateCleaner.git
     ```
 3.  **Build:** Use the PyInstaller build script to create the executable:
     ```bash
