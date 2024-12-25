@@ -25,6 +25,12 @@ TEMPLATE_FILE_EXTENSIONS = {
     '.ds_store',
 }
 
+DISPLAY_FILE_EXTENSIONS = {
+    '.pdf',
+    '.png',
+    '.jpg',
+}
+
 class Configuration:
     target_directory: Path
     extensions_to_delete: set[str]
