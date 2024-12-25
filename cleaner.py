@@ -27,9 +27,9 @@ def delete_files_by_extension(target_directory: Path, extensions_to_delete: set[
         if not file_to_delete.is_file():
             continue
         if file_to_delete.name.startswith('.'):
-            if file_to_delete.name not in extensions_to_delete:
+            if file_to_delete.name.lower() not in extensions_to_delete:
                 continue
-        elif file_to_delete.suffix not in extensions_to_delete:
+        elif file_to_delete.suffix.lower() not in extensions_to_delete:
             continue
         delete_and_clean_empty_directories(file_to_delete=file_to_delete, top_directory=target_directory)
         deleted_files += 1

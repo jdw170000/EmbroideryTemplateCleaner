@@ -3,6 +3,7 @@ import json
 
 CONFIG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.config.json'
 
+# file extensions will be cast to lowercase before comparsion
 TEMPLATE_FILE_EXTENSIONS = {
     '.exp',
     '.hus',
@@ -19,7 +20,9 @@ TEMPLATE_FILE_EXTENSIONS = {
     '.edr',
     '.inf',
     '.pec',
-    '.DS_Store',
+    '.pes',
+    '.dst',
+    '.ds_store',
 }
 
 class Configuration:
