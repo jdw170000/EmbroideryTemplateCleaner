@@ -12,6 +12,6 @@ PyInstaller.__main__.run([
     'main.py',
     '--onefile',
     '--windowed',
-    '--name', 'embroidery_template_cleaner',
+    '--name', 'empty_folder_cleaner',
     '--icon', 'icon.ico'
 ])
