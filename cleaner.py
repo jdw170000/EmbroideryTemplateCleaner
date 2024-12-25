@@ -29,35 +29,19 @@ def is_directory_empty(path: Path) -> bool:
 
     return False
 
-def delete_and_clean_empty_directories(file_to_delete: Path, top_directory: Path = None):
-    # delete the file
-    file_to_delete.unlink()
-
-    # walk upwards, deleting empty directories left by this deletion
-    current = file_to_delete.parent
-    while is_directory_empty(current):
-        if current == top_directory:
-            break
-        current.rmdir()
-        current = current.parent
-
-def delete_files_by_extension(target_directory: Path, extensions_to_delete: set[str]) -> int:
+def delete_empty_directories(target_directory: Path) -> int:
     if target_directory is None:
         return 0
     
     deleted_files = 0
-    for file_to_delete in list(target_directory.rglob(f"*")):
-        if not file_to_delete.is_file():
+    for directory_to_delete in list(target_directory.rglob(f"*")):
+        if not directory_to_delete.is_dir():
             continue
-        if file_to_delete.name.startswith('.'):
-            if file_to_delete.name.lower() not in extensions_to_delete:
-                continue
-        elif file_to_delete.suffix.lower() not in extensions_to_delete:
-            continue
-        delete_and_clean_empty_directories(file_to_delete=file_to_delete, top_directory=target_directory)
-        deleted_files += 1
+        if is_directory_empty(directory_to_delete):
+            directory_to_delete.rmdir()
+            deleted_files += 1
     
     return deleted_files
 
 def clean_directory(config: Configuration) -> int:
-    return delete_files_by_extension(config.target_directory, config.extensions_to_delete)
+    return delete_empty_directories(config.target_directory)

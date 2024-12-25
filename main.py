@@ -1,17 +1,13 @@
 import tkinter as tk
 from gui import CleanerGUI
-from config import load_config, save_config
+from config import Configuration
 
 def main():
     root = tk.Tk()
     root.title("Embroidery Template Cleaner")
-    config = load_config()
-    app = CleanerGUI(master=root, config=config)
+    app = CleanerGUI(master=root, config=Configuration(''))
     app.pack(padx=10, pady=10)
-    try:
-        root.mainloop()
-    finally:
-        save_config(app.config)
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
