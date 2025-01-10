@@ -63,7 +63,7 @@ class Configuration:
             raise ValueError(f"Extension blacklist ({config_dict['extension_blacklist']}) should be a list of strings.")
 
         target_directory = Path(config_dict['target_directory']) if config_dict['target_directory'] else None
-        extension_blacklist = set(config_dict['extension_blacklist'])
+        extension_blacklist = set(ext.lower() for ext in config_dict['extension_blacklist'])
 
         return Configuration(target_directory=target_directory, extensions_to_delete=extension_blacklist)
     
