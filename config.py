@@ -9,6 +9,7 @@ TEMPLATE_FILE_EXTENSIONS = {
     '.hus',
     '.jef',
     '.pcs',
+    '.rgb',
     '.sew',
     '.vip',
     '.vp3',
