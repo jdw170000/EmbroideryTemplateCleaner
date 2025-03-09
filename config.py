@@ -1,6 +1,8 @@
 from pathlib import Path
 import json
 
+from tkinter import messagebox
+
 CONFIG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.config.json'
 
 # file extensions will be cast to lowercase before comparsion
@@ -38,14 +40,22 @@ class Configuration:
     
     def __init__(self, target_directory: Path, extensions_to_delete: set[str]):
         if target_directory:
-            if not target_directory.exists():
-                raise ValueError(f"Target directory {target_directory} does not exist!")
-            if not target_directory.is_dir():
-                raise ValueError(f"Target directory {target_directory} is not a directory.")
+            try:
+                if not target_directory.exists():
+                    raise ValueError(f"Target directory {target_directory} does not exist!")
+                if not target_directory.is_dir():
+                    raise ValueError(f"Target directory {target_directory} is not a directory.")
+            except ValueError as err:
+                messagebox.showwarning("Invalid target directory.", err)
+                target_directory = None
 
         if extensions_to_delete:
-            if len(extensions_to_delete - TEMPLATE_FILE_EXTENSIONS) > 0:
-                raise ValueError(f"Extension blacklist contains unrecognized extensions {extensions_to_delete - TEMPLATE_FILE_EXTENSIONS}.")
+            try:
+                if len(extensions_to_delete - TEMPLATE_FILE_EXTENSIONS) > 0:
+                    raise ValueError(f"Extension blacklist contains unrecognized extensions {extensions_to_delete - TEMPLATE_FILE_EXTENSIONS}.")
+            except ValueError as err:
+                messagebox.showwarning("Invalid extension blacklist.", err)
+                extensions_to_delete &= TEMPLATE_FILE_EXTENSIONS
         
         self.target_directory = target_directory
         self.extensions_to_delete = extensions_to_delete
@@ -75,7 +85,10 @@ class Configuration:
 
 def load_config() -> Configuration:
     if CONFIG_FILE_LOCATION.exists():
-        return Configuration.from_json(CONFIG_FILE_LOCATION)
+        try:
+            return Configuration.from_json(CONFIG_FILE_LOCATION)
+        except ValueError as err:
+            messagebox.showwarning("Configuration could not be loaded.", err)
     return Configuration(target_directory=None, extensions_to_delete=set())
 
 def save_config(config: Configuration):
