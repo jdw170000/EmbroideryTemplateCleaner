@@ -8,7 +8,20 @@ import queue
 import time
 
 from cleaner import clean_directory
-from config import Configuration, TEMPLATE_FILE_EXTENSIONS
+from config import Configuration, TEMPLATE_FILE_EXTENSIONS, LOG_FILE_LOCATION
+
+import logging
+from logging.handlers import RotatingFileHandler
+log_rotation_handler = RotatingFileHandler(
+    filename=LOG_FILE_LOCATION, 
+    maxBytes=500*1024, # 500KB max file size
+    backupCount=3, # how many historic files to store
+)
+logging.basicConfig(
+    handlers=[log_rotation_handler], 
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 class ScrollableConfirmationDialog(tk.Toplevel):
     def __init__(self, parent, title, message_intro, items_to_list, message_outro):
@@ -272,6 +285,7 @@ class CleanerGUI(ttk.Frame):
                 message = self.update_queue.get_nowait()
 
                 if message['type'] == 'status':
+                    logging.info(f"{message['message']}")
                     if self.progress_dialog:
                         self.progress_dialog.update_status(message['message'])
                 
@@ -294,7 +308,9 @@ class CleanerGUI(ttk.Frame):
                         files_in_dir, 
                         message_outro
                     )
-                    user_response = dialog.result 
+                    user_response = dialog.result
+
+                    logging.info(f"User {'accepted' if user_response else 'rejected'} the deletion of {message['path']}.")
 
                     self.response_queue.put(user_response)
                     
@@ -309,6 +325,7 @@ class CleanerGUI(ttk.Frame):
                     
                     deleted_files = message['deleted_files']
                     target_dir = message['target_dir']
+                    logging.info(f"Cleaning operation complete. Deleted {deleted_files} files from {target_dir}.")
                     messagebox.showinfo("Operation Complete", f"Deleted {deleted_files} files from {target_dir}!")
                     self.action_button.config(state=tk.NORMAL)
                     return # Stop polling
@@ -319,6 +336,7 @@ class CleanerGUI(ttk.Frame):
                         self.progress_dialog.destroy()
                         self.progress_dialog = None
                     
+                    logging.error(f"Fatal error occurred: {message['message']}")
                     messagebox.showerror("Error During Cleaning", f"An error occurred: {message['message']}")
                     self.action_button.config(state=tk.NORMAL)
                     return # Stop polling

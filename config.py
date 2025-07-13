@@ -4,6 +4,7 @@ import json
 from tkinter import messagebox
 
 CONFIG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.config.json'
+LOG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.log'
 
 # file extensions will be cast to lowercase before comparsion
 TEMPLATE_FILE_EXTENSIONS = {
