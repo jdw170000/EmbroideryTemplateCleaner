@@ -22,6 +22,7 @@ TEMPLATE_FILE_EXTENSIONS = {
     '.art',
     '.jan',
     '.edr',
+    '.emb',
     '.inf',
     '.pec',
     '.pes',
