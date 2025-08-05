@@ -228,7 +228,7 @@ class CleanerGUI(ttk.Frame):
             else:
                 checkbox.grid(row=i - mid_point, column=1, padx=(5,10), sticky="w")
         
-        current_row = max(mid_point, num_exts - mid_point) # Row after checkboxes
+        current_row = max(mid_point + 1, num_exts - mid_point) # Row after checkboxes
 
         # Action button
         self.action_button = ttk.Button(self, text="Delete Selected File Extensions", command=self.run_cleaner)
