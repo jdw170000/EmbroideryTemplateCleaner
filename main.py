@@ -18,7 +18,7 @@ logging.basicConfig(
 
 from embroidery_template_cleaner.gui.main_window import CleanerMainWindow
 
-VERSION = 'v2.0.0'
+VERSION = 'v2.0.1'
 
 def main():
     root = tk.Tk()
