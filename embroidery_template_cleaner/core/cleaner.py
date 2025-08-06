@@ -13,8 +13,6 @@ from .events import (
 )
 
 # --- Type Definitions ---
-type SubGenerator = Generator[Event, Response, None]
-type MainGenerator = Generator[Event, Response, int]
 
 class OperationAbortedError(Exception):
     """Raised when the user chooses to abort the operation."""
@@ -26,7 +24,7 @@ def _retryable_operation_generator(
     operation: Callable[[], None],
     operation_description: str,
     path: Path,
-) -> SubGenerator:
+) -> Generator[Event, Response, bool]:
     """
     A generic generator that executes a given operation and handles OSErrors
     by yielding a RequestRetrySkipAbort event, allowing the user to decide
@@ -40,7 +38,7 @@ def _retryable_operation_generator(
     while True:
         try:
             operation()
-            return # Success, exit the generator
+            return True # Success, exit the generator
         except OSError as e:
             # The operation failed, ask the user what to do.
             response: RetrySkipAbortResponse = yield RequestRetrySkipAbort(
@@ -51,7 +49,7 @@ def _retryable_operation_generator(
             if response.choice == RetrySkipAbortChoice.ABORT:
                 raise OperationAbortedError("User aborted the operation.")
             if response.choice == RetrySkipAbortChoice.SKIP:
-                return # User chose to skip, exit the generator
+                return False # User chose to skip, exit the generator
             # If RETRY, the loop continues and the operation is attempted again.
 
 # --- Sub-generator for Directory Emptiness Check ---
@@ -102,10 +100,30 @@ def _is_directory_empty_and_confirm(path: Path) -> Generator[Event, Response, bo
 
     return False
 
+# --- Sub-generator for Directory Deletion on File Delete ---
+
+def _delete_empty_parent_directories(anchor_file: Path, top_directory: Path) -> Generator[Event, Response, None]:
+    current_directory = anchor_file.parent
+
+    while (yield from _is_directory_empty_and_confirm(current_directory)):
+        # don't walk above the target directory
+        if not top_directory in current_directory.parents:
+            yield StatusUpdate(message=f"Stopping empty directory deletion walk at target directory.")
+            return
+
+        yield StatusUpdate(message=f"Removing empty directory: {current_directory}")
+        yield from _retryable_operation_generator(
+            operation=current_directory.rmdir,
+            operation_description=f"removing directory '{current_directory.name}'",
+            path=current_directory
+        )
+
+        current_directory = current_directory.parent
+
 
 # --- Sub-generator for File Deletion Pass ---
 
-def _delete_matching_files_generator(all_paths: List[Path], extensions_to_delete: set[str]) -> MainGenerator:
+def _delete_matching_files_generator(all_paths: List[Path], config: Configuration) -> Generator[Event, Response, int]:
     """
     Iterates over a given list of paths and deletes files matching the extensions.
     Returns the count of deleted files.
@@ -115,43 +133,24 @@ def _delete_matching_files_generator(all_paths: List[Path], extensions_to_delete
         if not (path.is_file() and path.exists()):
             continue
 
-        if path.suffix.lower() in extensions_to_delete or path.name.lower() in extensions_to_delete:
-            yield from _retryable_operation_generator(
+        if path.suffix.lower() in config.extensions_to_delete or path.name.lower() in config.extensions_to_delete:
+            yield StatusUpdate(message=f"Deleting file: {path}")
+            operation_successful = yield from _retryable_operation_generator(
                 operation=path.unlink,
                 operation_description=f"deleting file '{path.name}'",
                 path=path
             )
-            deleted_files_count += 1
-            yield StatusUpdate(message=f"Deleted: {path}")
+            if operation_successful:
+                deleted_files_count += 1
+
+                # clean up empty directories left by this file deletion
+                yield from _delete_empty_parent_directories(anchor_file=path, top_directory=config.target_directory)
 
     return deleted_files_count
 
-
-# --- Sub-generator for Empty Directory Cleanup Pass ---
-
-def _cleanup_empty_directories_generator(all_paths: List[Path]) -> SubGenerator:
-    """
-    Cleans up empty directories from a given list of paths.
-    """
-    all_dirs = [p for p in all_paths if p.is_dir() and p.exists()]
-    all_dirs.sort(key=lambda p: len(p.parts), reverse=True)
-
-    for path in all_dirs:
-
-        is_empty = yield from _is_directory_empty_and_confirm(path)
-
-        if is_empty:
-            yield StatusUpdate(message=f"Removing empty directory: {path}")
-            yield from _retryable_operation_generator(
-                operation=path.rmdir,
-                operation_description=f"removing directory '{path.name}'",
-                path=path
-            )
-
-
 # --- Main Orchestrator Generator ---
 
-def clean_directory_generator(config: Configuration) -> MainGenerator:
+def clean_directory_generator(config: Configuration) -> Generator[Event, Response, int]:
     """
     Main generator that orchestrates the cleaning process by calling sub-generators.
     """
@@ -165,15 +164,11 @@ def clean_directory_generator(config: Configuration) -> MainGenerator:
         yield StatusUpdate(message=f"Fatal error scanning directory: {e}")
         return 0
 
-    # Pass 1: Delete matching files
+    # delete matching files
     yield StatusUpdate(message=f"Found {len(all_paths)} items. Deleting specified file types...")
     deleted_files_count = yield from _delete_matching_files_generator(
         all_paths=all_paths,
-        extensions_to_delete=config.extensions_to_delete
+        config=config
     )
-
-    # Pass 2: Clean up empty directories
-    yield StatusUpdate(message="Cleaning up empty directories...")
-    yield from _cleanup_empty_directories_generator(all_paths=all_paths)
 
     return deleted_files_count
