@@ -19,7 +19,7 @@ Embroidery template packages often contain duplicate files in numerous file form
 If you prefer to build the application from the source code:
 
 1.  **Prerequisites:**
-    *   Python 3.9 or later installed
+    *   Python 3.12 or later installed
     *   `PyInstaller` installed: `pip install pyinstaller`
 2.  **Clone:** Clone the repository:
     ```bash
