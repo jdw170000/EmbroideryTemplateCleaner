@@ -5,13 +5,32 @@ CONFIG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.config.json'
 LOG_FILE_LOCATION = Path.home() / 'embroidery_template_cleaner.log'
 
 TEMPLATE_FILE_EXTENSIONS = {
-    '.exp', '.hus', '.jef', '.pcs', '.rgb', '.sew', '.vip',
-    '.vp3', '.xxx', '.shv', '.csd', '.art', '.jan', '.edr',
-    '.emb', '.inf', '.pec', '.pes', '.dst', '.ds_store',
+    '.exp', 
+    '.hus', 
+    '.jef', 
+    '.pcs', 
+    '.rgb', 
+    '.sew', 
+    '.vip',
+    '.vp3', 
+    '.xxx', 
+    '.shv', 
+    '.csd', 
+    '.art', 
+    '.jan', 
+    '.edr',
+    '.emb', 
+    '.inf', 
+    '.pec', 
+    '.pes', 
+    '.dst', 
+    '.ds_store',
 }
 
 DISPLAY_FILE_EXTENSIONS = {
-    '.pdf', '.png', '.jpg',
+    '.pdf', 
+    '.png', 
+    '.jpg',
 }
 
 

@@ -131,7 +131,9 @@ class CleanerMainWindow(ttk.Frame):
                         path=path,
                         error=error_msg
                     )
+                    logging.error(f"{error_msg} on {op_desc}")
                     response = RetrySkipAbortResponse(choice=dialog.result)
+                    logging.info(f"User selection for error {error_msg} on {op_desc}: {response.choice.name}")
                     self.response_queue.put(response)
 
                     if self.progress_dialog: 

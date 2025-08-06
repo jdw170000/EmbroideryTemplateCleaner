@@ -7,7 +7,6 @@ from .events import (
     Response,
     StatusUpdate,
     RequestConfirmation,
-    UserConfirmationResponse,
     RequestRetrySkipAbort,
     RetrySkipAbortResponse,
     RetrySkipAbortChoice
@@ -83,8 +82,6 @@ def _is_directory_empty_and_confirm(path: Path) -> Generator[Event, Response, bo
             files_in_dir=[f.name for f in display_files]
         )
 
-        yield StatusUpdate(message=repr(response))
-
         if not response.accepted:
             yield StatusUpdate(message=f"Skipping deletion of display files in {path.name}.")
             return False
@@ -125,7 +122,7 @@ def _delete_matching_files_generator(all_paths: List[Path], extensions_to_delete
                 path=path
             )
             deleted_files_count += 1
-            yield StatusUpdate(message=f"Deleted: {path.name}")
+            yield StatusUpdate(message=f"Deleted: {path}")
 
     return deleted_files_count
 
@@ -144,7 +141,7 @@ def _cleanup_empty_directories_generator(all_paths: List[Path]) -> SubGenerator:
         is_empty = yield from _is_directory_empty_and_confirm(path)
 
         if is_empty:
-            yield StatusUpdate(message=f"Removing empty directory: {path.name}")
+            yield StatusUpdate(message=f"Removing empty directory: {path}")
             yield from _retryable_operation_generator(
                 operation=path.rmdir,
                 operation_description=f"removing directory '{path.name}'",

@@ -38,14 +38,13 @@ class RetryDialog(tk.Toplevel):
         retry_button = ttk.Button(button_frame, text="Retry", command=self._on_retry)
         retry_button.grid(row=0, column=3, padx=5, sticky="e")
         
-        self.protocol("WM_DELETE_WINDOW", self._on_skip) # 'X' button means skip
+        self.protocol("WM_DELETE_WINDOW", self._on_skip) # closing the window selects "Skip"
         self._center_window()
         self.grab_set()
         self.focus_set()
         self.wait_window(self)
 
     def _center_window(self):
-        # (This function is identical to the one in confirmation_dialog.py)
         self.update_idletasks()
         parent_x, parent_y = self.parent.winfo_rootx(), self.parent.winfo_rooty()
         parent_width, parent_height = self.parent.winfo_width(), self.parent.winfo_height()
