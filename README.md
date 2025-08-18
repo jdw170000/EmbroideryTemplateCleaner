@@ -30,3 +30,13 @@ If you prefer to build the application from the source code:
     python build.py
     ```
 4.  **Executable:** The executable will be located in the `dist` directory.
+
+## Building the Installer
+
+The Windows installer for the Embroidery Template Cleaner is built with [Inno Setup](https://jrsoftware.org/isinfo.php), an open-source Windows installation creator.
+
+1. **Prerequisites:**
+   * Install a [stable release of Inno Setup](https://jrsoftware.org/isdl.php#stable).
+   * Ensure that the application executable is in the `dist` directory (e.g., built from source).
+2. **Compile:** open `create_windows_installer.iss` in Inno Setup and compile it (hotkey: ALT+F9).
+3. **Installer:** The installer will be located in `dist/install_embroidery_template_cleaner.exe`.
