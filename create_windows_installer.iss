@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Embroidery Template Cleaner"
-#define MyAppVersion "2.0.1"
+#define MyAppVersion "2.0.2"
 #define MyAppPublisher "Josh Wiedemeier"
 #define MyAppURL "https://github.com/jdw170000/EmbroideryTemplateCleaner"
 #define MyAppExeName "embroidery_template_cleaner.exe"
