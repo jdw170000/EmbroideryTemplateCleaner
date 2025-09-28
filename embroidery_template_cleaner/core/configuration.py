@@ -45,7 +45,7 @@ class Configuration:
             if not target_directory.is_dir():
                 raise ValueError(f"Target path is not a directory: {target_directory}")
 
-        unrecognized_exts = extensions_to_delete - TEMPLATE_FILE_EXTENSIONS
+        unrecognized_exts = extensions_to_delete - (TEMPLATE_FILE_EXTENSIONS | DISPLAY_FILE_EXTENSIONS)
         if unrecognized_exts:
             raise ValueError(f"Unrecognized extensions provided: {unrecognized_exts}")
         

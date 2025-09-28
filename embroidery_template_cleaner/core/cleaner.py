@@ -88,7 +88,7 @@ def _is_directory_empty_and_confirm(path: Path) -> Generator[Event, Response, bo
         # Note: We don't need the count back from this, so we just yield from it.
         yield from _delete_matching_files_generator(
             all_paths=display_files,
-            extensions_to_delete=DISPLAY_FILE_EXTENSIONS
+            config=Configuration(target_directory=path, extensions_to_delete=DISPLAY_FILE_EXTENSIONS)
         )
 
         # After deletion, check if the directory is now actually empty.
